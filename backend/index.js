@@ -20,14 +20,15 @@ ConnectDB();
 
 // ✅ CORS Configuration
 app.use(cors({
-    origin: "https://amazon-e-commerce-psi.vercel.app",
-    credentials: true, // Enable if you're using cookies or auth headers
-  }));
-app.use(express.json());
+  origin: process.env.FRONTEND_URL,
+  credentials: true, // Enable if you're using cookies or auth headers
+}));
 
-app.use(cookieParser()); 
+app.use(express.json()); // Only use once
+app.use(cookieParser());
 app.use(express.urlencoded({ extended: true }));
-// Routes
+
+// API Routes
 app.use('/api/products', productRoutes);
 app.use('/api/user', userRoutes);
 app.use('/api/orders', orderRoutes);
@@ -39,9 +40,8 @@ app.use("/api/sales", salesRoutes);
 app.use("/api/giftcards", giftcardsRoutes);
 app.use("/api/grocery", groceryRoutes);
 
-export default function handler(req, res) {
-  res.status(200).json({ message: "Hello from backend!" });
-}
-
+// Start the server (for local)
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+
+export default app;

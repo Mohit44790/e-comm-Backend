@@ -2,7 +2,8 @@ import express from 'express';
 import dotenv from 'dotenv';
 import cors from 'cors';
 import cookieParser from 'cookie-parser';
-import ConnectDB from './config/db.js'; // Adjust if needed
+import ConnectDB from './config/db.js';
+
 import productRoutes from './routes/productRoutes.js';
 import userRoutes from './routes/userRoutes.js';
 import orderRoutes from './routes/orderRoutes.js';
@@ -13,11 +14,19 @@ import reviewRoutes from "./routes/reviewRoutes.js";
 import salesRoutes from "./routes/TodaySale.js";
 import giftcardsRoutes from "./routes/giftCardRoutes.js";
 import groceryRoutes from "./routes/groceryRoutes.js";
+
 import serverless from 'serverless-http';
 
 dotenv.config();
+
 const app = express();
-ConnectDB();
+
+try {
+  await ConnectDB();
+} catch (error) {
+  console.error('❌ Database connection failed:', error);
+  // Optionally send a response or exit early
+}
 
 app.use(cors({
   origin: process.env.FRONTEND_URL,
@@ -40,8 +49,5 @@ app.use("/api/sales", salesRoutes);
 app.use("/api/giftcards", giftcardsRoutes);
 app.use("/api/grocery", groceryRoutes);
 
-export default function handler(req, res) {
-  res.status(200).json({ message: 'Test API works!' });
-}
-// No app.listen() — this is serverless
+// ✅ Correct export (no default export here)
 export const handler = serverless(app);

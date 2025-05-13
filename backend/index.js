@@ -2,7 +2,7 @@ import express from 'express';
 import dotenv from 'dotenv';
 import cors from 'cors';
 import cookieParser from 'cookie-parser';
-import ConnectDB from './config/db.js';
+import ConnectDB from './config/db.js'; // Adjust if needed
 import productRoutes from './routes/productRoutes.js';
 import userRoutes from './routes/userRoutes.js';
 import orderRoutes from './routes/orderRoutes.js';
@@ -23,10 +23,12 @@ app.use(cors({
   origin: process.env.FRONTEND_URL,
   credentials: true,
 }));
+
 app.use(express.json());
 app.use(cookieParser());
 app.use(express.urlencoded({ extended: true }));
 
+// API routes
 app.use('/api/products', productRoutes);
 app.use('/api/user', userRoutes);
 app.use('/api/orders', orderRoutes);
@@ -38,5 +40,5 @@ app.use("/api/sales", salesRoutes);
 app.use("/api/giftcards", giftcardsRoutes);
 app.use("/api/grocery", groceryRoutes);
 
-// 👇 Export wrapped app for Vercel
+// No app.listen() — this is serverless
 export const handler = serverless(app);

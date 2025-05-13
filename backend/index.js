@@ -24,7 +24,7 @@ app.use(cors({
     credentials: true, // Enable if you're using cookies or auth headers
   }));
 app.use(express.json());
-app.use(express.json());
+
 app.use(cookieParser()); 
 app.use(express.urlencoded({ extended: true }));
 // Routes

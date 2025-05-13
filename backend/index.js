@@ -58,3 +58,7 @@ app.get('/api/test', (req, res) => {
 // ❌ Do NOT use app.listen() in Vercel
 // ✅ Export serverless handler
 export const handler = serverless(app);
+app.use((err, req, res, next) => {
+  console.error('Unhandled error:', err.stack);
+  res.status(500).json({ message: 'Server error', error: err.message });
+});

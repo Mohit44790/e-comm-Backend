@@ -21,12 +21,15 @@ dotenv.config();
 
 const app = express();
 
-try {
-  await ConnectDB();
-} catch (error) {
-  console.error('❌ Database connection failed:', error);
-  // Optionally send a response or exit early
-}
+(async () => {
+  try {
+    await ConnectDB();
+    console.log("✅ MongoDB Connected");
+  } catch (error) {
+    console.error("❌ MongoDB connection failed:", error);
+  }
+})();
+
 
 app.use(cors({
   origin: process.env.FRONTEND_URL,

@@ -40,5 +40,8 @@ app.use("/api/sales", salesRoutes);
 app.use("/api/giftcards", giftcardsRoutes);
 app.use("/api/grocery", groceryRoutes);
 
+export default function handler(req, res) {
+  res.status(200).json({ message: 'Test API works!' });
+}
 // No app.listen() — this is serverless
 export const handler = serverless(app);

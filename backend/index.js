@@ -31,7 +31,7 @@ const app = express();
 })();
 
 app.use(cors({
-  origin: process.env.FRONTEND_URL,
+  origin: "https://amazon-e-commerce-psi.vercel.app",
   credentials: true,
 }));
 app.use(express.json());

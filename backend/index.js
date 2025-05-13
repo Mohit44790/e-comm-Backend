@@ -3,45 +3,58 @@ import dotenv from 'dotenv';
 import cors from 'cors';
 import cookieParser from 'cookie-parser';
 import ConnectDB from './config/db.js';
+import serverless from 'serverless-http';
+
 import productRoutes from './routes/productRoutes.js';
 import userRoutes from './routes/userRoutes.js';
 import orderRoutes from './routes/orderRoutes.js';
-import categoryRoutes from "./routes/categoryRoutes.js";
-import brandRoutes from "./routes/brandRoutes.js";
-import suggestionsRoutes from "./routes/suggestionRoutes.js";
-import reviewRoutes from "./routes/reviewRoutes.js";
-import salesRoutes from "./routes/TodaySale.js";
-import giftcardsRoutes from "./routes/giftCardRoutes.js";
-import groceryRoutes from "./routes/groceryRoutes.js";
+import categoryRoutes from './routes/categoryRoutes.js';
+import brandRoutes from './routes/brandRoutes.js';
+import suggestionsRoutes from './routes/suggestionRoutes.js';
+import reviewRoutes from './routes/reviewRoutes.js';
+import salesRoutes from './routes/TodaySale.js';
+import giftcardsRoutes from './routes/giftCardRoutes.js';
+import groceryRoutes from './routes/groceryRoutes.js';
+
+dotenv.config();
 
 const app = express();
-dotenv.config();
-ConnectDB();
 
-// ✅ CORS Configuration
+// Optional: connect to DB inside an IIFE so top-level await isn't needed
+(async () => {
+  try {
+    await ConnectDB();
+    console.log('✅ MongoDB connected');
+  } catch (err) {
+    console.error('❌ MongoDB connection failed:', err);
+  }
+})();
+
 app.use(cors({
-    origin: process.env.FRONTEND_URL,
-    credentials: true, // Enable if you're using cookies or auth headers
-  }));
+  origin: process.env.FRONTEND_URL,
+  credentials: true,
+}));
 app.use(express.json());
-app.use(express.json());
-app.use(cookieParser()); 
+app.use(cookieParser());
 app.use(express.urlencoded({ extended: true }));
+
 // Routes
 app.use('/api/products', productRoutes);
 app.use('/api/user', userRoutes);
 app.use('/api/orders', orderRoutes);
-app.use("/api/categories", categoryRoutes);
-app.use("/api/brand", brandRoutes);
-app.use("/api/suggestions", suggestionsRoutes);
-app.use("/api/reviews", reviewRoutes);
-app.use("/api/sales", salesRoutes);
-app.use("/api/giftcards", giftcardsRoutes);
-app.use("/api/grocery", groceryRoutes);
+app.use('/api/categories', categoryRoutes);
+app.use('/api/brand', brandRoutes);
+app.use('/api/suggestions', suggestionsRoutes);
+app.use('/api/reviews', reviewRoutes);
+app.use('/api/sales', salesRoutes);
+app.use('/api/giftcards', giftcardsRoutes);
+app.use('/api/grocery', groceryRoutes);
 
-export default function handler(req, res) {
-  res.status(200).json({ message: "Hello from backend!" });
-}
+// Optional test route
+app.get('/api/test', (req, res) => {
+  res.status(200).json({ message: 'API is working' });
+});
 
-const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+// ❌ Do NOT use app.listen() in Vercel
+// ✅ Export serverless handler
+export const handler = serverless(app);

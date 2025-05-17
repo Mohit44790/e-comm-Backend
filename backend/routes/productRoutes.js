@@ -17,7 +17,7 @@ router.get("/category/:categoryName", categoryName);
 
 // Protected Routes
 router.post('/create', isAuthenticated, isAdmin, upload.array('images',5), createProduct);
-router.put("/:id", isAuthenticated, isAdmin, upload.single("images"), updateProduct);
+router.put("/:id", isAuthenticated, isAdmin, upload.array("images", 5), updateProduct);
 router.delete("/:id", isAuthenticated, isAdmin, deleteProduct);
 router.get("/admin/stats", getAdminStats);
 

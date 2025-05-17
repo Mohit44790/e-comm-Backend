@@ -209,29 +209,46 @@ export const updateProduct = async (req, res) => {
   try {
     console.log("Request body:", req.body); // Log incoming request body
     console.log("Request file:", req.file); // Log incoming file
-
     const updates = req.body;
+
+    // Convert colors[] and sizes[] from string to array (if sent as string)
+    if (typeof updates.colors === 'string') {
+      updates.colors = updates.colors.split(',').map(c => c.trim());
+    }
+    if (typeof updates.sizes === 'string') {
+      updates.sizes = updates.sizes.split(',').map(s => s.trim());
+    }
+
+    // Generate slug if name is updated
     if (updates.name) {
       updates.slug = slugify(updates.name);
     }
 
-    let imageUrl = "";
-    if (req.imageUrl) {
-      updates.images = [req.imageUrl]; // Replace with new image
-    }
-    if (req.file) {
-      console.log("Uploading image to Cloudinary...");
-      const upload = await uploadToCloudinaryDirect(req.file, 'products');
-      console.log("Image uploaded:", upload.secure_url);
-      imageUrl = upload.secure_url;
+    // Upload new images if any
+    if (req.files && req.files.length > 0) {
+      const uploadedImages = [];
+
+      for (const file of req.files) {
+        const result = await uploadToCloudinaryDirect(file, 'products');
+        uploadedImages.push(result.secure_url);
+      }
+
+      updates.images = uploadedImages; // Replace existing images
     }
 
-    const product = await Product.findByIdAndUpdate(req.params.id, updates, { new: true });
-    console.log("Updated product:", product); // Log the updated product
-    res.status(200).json({ success: true, product });
+    const updatedProduct = await Product.findByIdAndUpdate(req.params.id, updates, { new: true });
+
+    res.status(200).json({
+      success: true,
+      product: updatedProduct,
+    });
   } catch (error) {
     console.error("Error updating product:", error);
-    res.status(500).json({ success: false, message: "Failed to update product", error: error.message });
+    res.status(500).json({
+      success: false,
+      message: "Failed to update product",
+      error: error.message,
+    });
   }
 };
 
